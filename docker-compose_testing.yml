@@ -1,0 +1,15 @@
+services:
+  hammerdb:
+    image: tpcorg/hammerdb:latest
+    container_name: hammerdb_container
+    volumes:
+     - ./:/tmp/repo/pg
+  postgres:
+    image: postgres:17.6-trixie
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
