@@ -17,7 +17,7 @@ diset tpcc pg_pass postgres
 diset tpcc pg_dbase postgres
 # diset tpcc pg_raiseerror true
 
-set total_transactions 250000 ;# The total number of transactions to process.
+set total_transactions 150000 ;# The total number of transactions to process.
 set vu [ numberOfCPUs ]
 # Calculate transactions per virtual user
 set transactions_per_user [expr {$total_transactions/$vu} ]
@@ -25,7 +25,7 @@ set transactions_per_user [expr {$total_transactions/$vu} ]
 # Configure the driver to run a fixed number of transactions
 diset tpcc pg_total_iterations $transactions_per_user
 
-diset tpcc pg_duration 20
+diset tpcc pg_duration 14
 diset tpcc pg_driver timed
 
 # diset tpcc pg_vacuum true
