@@ -1,0 +1,36 @@
+---
+name: Postgres DBMS Test
+author: Falk Händler
+description: Benchmarks postgresql with HammerDB using TPC-C
+
+compose-file: !include base/docker-compose.yml
+
+flow:
+  - name: Build Warehouses
+    container: hammerdb_container
+    commands:
+      - type: console
+        note: RUN HAMMERDB BUILD
+        command: ./hammerdbcli auto /tmp/repo/base/pg_tprocc_buildschema.tcl | tee /dev/stderr | awk '/System achieved [0-9]+ NOPM/ { match($0, /System achieved [0-9]+ NOPM/); printf("GMT_SCI_R=%s\n", substr($0, RSTART+16, RLENGTH-21)) }'
+        shell: sh
+        log-stdout: true
+        read-sci-stdout: true
+  - name: Query Warehouses
+    container: postgres_container
+    commands:
+      - type: console
+        note: RUN BACKUP
+        command: pg_basebackup -D backup1 -c fast -p 5432 -U postgres; for i in {1..7}; do pg_basebackup -D backup${i}_incr -i backup1/backup_manifest -c fast -p 5432 -v -U postgres && sleep 60; done
+        shell: sh
+        log-stdout: true
+        read-sci-stdout: true
+  - name: Drop Warehouses
+    container: hammerdb_container
+    commands:
+      - type: console
+        note: RUN HAMMERDB DROP
+        command: ./hammerdbcli auto /tmp/repo/base/pg_tprocc_deleteschema.tcl | tee /dev/stderr | awk '/System achieved [0-9]+ NOPM/ { match($0, /System achieved [0-9]+ NOPM/); printf("GMT_SCI_R=%s\n", substr($0, RSTART+16, RLENGTH-21)) }'
+        note: DROP HAMMERDB SCHEMA
+        shell: sh
+        log-stdout: true
+        read-sci-stdout: true

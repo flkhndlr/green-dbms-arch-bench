@@ -10,7 +10,7 @@ diset connection pg_port 5432
 diset connection pg_sslmode disable
 
 set vu [ numberOfCPUs ]
-set warehouse [ expr {$vu * 20} ]
+set warehouse [ expr {$vu * 5} ]
 diset tpcc pg_count_ware $warehouse
 diset tpcc pg_num_vu $vu
 diset tpcc pg_superuser postgres
@@ -20,7 +20,8 @@ diset tpcc pg_user postgres
 diset tpcc pg_pass postgres
 diset tpcc pg_dbase postgres
 diset tpcc pg_tspace pg_default
-diset tpcc pg_storedprocs false
+diset tpcc pg_storedprocs true
+diset tpcc pg_partition true
 
 puts "SCHEMA BUILD STARTED"
 buildschema
