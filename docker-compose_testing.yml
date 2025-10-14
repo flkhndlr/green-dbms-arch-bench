@@ -1,9 +1,13 @@
 services:
   hammerdb:
-    image: tpcorg/hammerdb:latest
+    image: tpcorg/hammerdb:v5.0-cloudtk
     container_name: hammerdb_container
     volumes:
      - ./:/tmp/repo/
+    ports:
+      - 8080:8080
+      - 8081:8081
+      - 8082:8082
   postgres:
     image: postgres:17.6-trixie
     container_name: postgres_container
@@ -17,6 +21,29 @@ services:
       - back:/tmp/back
     ports:
       - "5432:5432"
-
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pg@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: pg
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+#  pgbouncer:
+#    image: edoburu/pgbouncer
+#    container_name: pgbouncer
+#    environment:
+#      #DATABASE_URL: "postgres://postgres:postgres@postgres_container/postgres"
+#      DB_USER: postgres
+#      DB_PASSWORD: postgres
+#      DB_HOST: postgres_container
+#      DB_NAME: postgres
+#      AUTH_TYPE: "scram-sha-256"
+#    ports:
+#      - "6432:5432"
 volumes:
   back:
+  pgadmin-data:

@@ -5,7 +5,7 @@ puts "SETTING CONFIGURATION"
 dbset db pg
 dbset bm TPC-C
 
-diset connection pg_host postgres_container
+diset connection pg_host pgbouncer
 diset connection pg_port 5432
 diset connection pg_sslmode disable
 
@@ -33,7 +33,6 @@ diset tpcc pg_timeprofile true
 #diset tpcc pg_allwarehouse true
 
 loadscript
-customscript /tmp/repo/K20_algos/script.tcl
 puts "TEST STARTED"
 vuset vu vcpu
 vucreate

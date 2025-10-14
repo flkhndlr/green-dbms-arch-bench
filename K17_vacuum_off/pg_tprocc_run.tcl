@@ -28,12 +28,11 @@ diset tpcc pg_total_iterations $transactions_per_user
 diset tpcc pg_duration 20
 diset tpcc pg_driver timed
 
-# diset tpcc pg_vacuum true
+diset tpcc pg_vacuum false
 diset tpcc pg_timeprofile true
 #diset tpcc pg_allwarehouse true
 
 loadscript
-customscript /tmp/repo/K20_algos/script.tcl
 puts "TEST STARTED"
 vuset vu vcpu
 vucreate

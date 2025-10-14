@@ -33,7 +33,6 @@ diset tpcc pg_timeprofile true
 #diset tpcc pg_allwarehouse true
 
 loadscript
-customscript /tmp/repo/K20_algos/script.tcl
 puts "TEST STARTED"
 vuset vu vcpu
 vucreate
