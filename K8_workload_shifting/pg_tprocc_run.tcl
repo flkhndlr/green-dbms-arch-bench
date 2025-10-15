@@ -18,7 +18,7 @@ diset tpcc pg_dbase postgres
 # diset tpcc pg_raiseerror true
 diset tpcc pg_partition true
 
-set total_transactions 250000 ;# The total number of transactions to process.
+set total_transactions 500000 ;# The total number of transactions to process.
 set vu [ numberOfCPUs ]
 # Calculate transactions per virtual user
 set transactions_per_user [expr {$total_transactions/$vu} ]

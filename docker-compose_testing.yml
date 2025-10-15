@@ -11,6 +11,11 @@ services:
   postgres:
     image: postgres:17.6-trixie
     container_name: postgres_container
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

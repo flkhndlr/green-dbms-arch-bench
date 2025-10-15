@@ -1,7 +1,7 @@
 #!/usr/local/bin/tclsh9.0
 #OPTIONS
 set library Pgtcl ;# PostgreSQL Library
-set total_iterations 75000 ;# Number of transactions before logging off
+set total_iterations 37500 ;# Number of transactions before logging off
 set RAISEERROR "false" ;# Exit script on PostgreSQL (true or false)
 set KEYANDTHINK "false" ;# Time for user thinking and keying (true or false)
 set rampup 2;  # Rampup time in minutes before first Transaction Count is taken
