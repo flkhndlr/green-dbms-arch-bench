@@ -14,9 +14,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
-    command: -c config_file=/etc/postgresql.conf
+    command: -c config_file=/tmp/repo/K10_backup_incremental/postgresql.conf
     volumes:
-      - ./postgresql.conf:/etc/postgresql.conf
       - back:/tmp/back
     ports:
       - "5432:5432"
+
+volumes:
+  back:

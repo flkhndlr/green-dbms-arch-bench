@@ -14,8 +14,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
-    command: -c config_file=/etc/postgresql.conf
-    volumes:
-      - ./postgresql.conf:/etc/postgresql.conf
+    command: -c config_file=/tmp/repo/K9_fsync/postgresql.conf
     ports:
       - "5432:5432"
