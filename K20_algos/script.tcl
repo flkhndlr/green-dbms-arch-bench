@@ -1,7 +1,7 @@
 #!/usr/local/bin/tclsh9.0
 #OPTIONS
 set library Pgtcl ;# PostgreSQL Library
-set total_iterations 37500 ;# Number of transactions before logging off
+set total_iterations 75000 ;# Number of transactions before logging off
 set RAISEERROR "false" ;# Exit script on PostgreSQL (true or false)
 set KEYANDTHINK "false" ;# Time for user thinking and keying (true or false)
 set rampup 2;  # Rampup time in minutes before first Transaction Count is taken
@@ -13,7 +13,7 @@ set ora_compatible "false" ;#Postgres Plus Oracle Compatible Schema
 set pg_storedprocs "true" ;#Postgres v11 Stored Procedures
 set host "postgres_container" ;# Address of the server hosting PostgreSQL
 set port "5432" ;# Port of the PostgreSQL server
-set sslmode "prefer" ;# SSLMode of the PostgreSQL Server
+set sslmode "disable" ;# SSLMode of the PostgreSQL Server
 set superuser "postgres" ;# Superuser privilege user
 set superuser_password "postgres" ;# Password for Superuser
 set default_database "postgres" ;# Default Database for Superuser
@@ -25,6 +25,7 @@ set db "postgres" ;# Database containing the TPC Schema
 if [catch {package require $library} message] { error "Failed to load $library - $message" }
 if [catch {package require tpcccommon} ] { error "Failed to load tpcc common functions" } else { namespace import tpcccommon::* }
 if [catch {package require xtprof} ] { error "Failed to load extended time profile functions" } else { namespace import xtprof::* }
+            
 
 if { [ chk_thread ] eq "FALSE" } {
     error "PostgreSQL Timed Script must be run in Thread Enabled Interpreter"
@@ -150,6 +151,8 @@ switch $myposition {
             puts "[ expr $totalvirtualusers - 1 ] Active Virtual Users configured"
             puts [ testresult $nopm $tpm PostgreSQL ]
             tsv::set application abort 1
+xttimeproflog $totalvirtualusers $library
+            
             if { $mode eq "Primary" } { eval [subst {thread::send -async $MASTER { remote_command ed_kill_vusers }}] }
             if { $VACUUM } {
                 set RAISEERROR "true"
@@ -361,11 +364,11 @@ switch $myposition {
         }
 
         proc fn_prep_statement { lda } {
-            set prep_neword "prepare neword (BIGINT, BIGINT, BIGINT, BIGINT, BIGINT) as select neword(\$1,\$2,\$3,\$4,\$5,0)"
-            set prep_payment "prepare payment (BIGINT, BIGINT, BIGINT, BIGINT, BIGINT, BIGINT, NUMERIC, VARCHAR) AS select payment(\$1,\$2,\$3,\$4,\$5,\$6,\$7,'\$8','0',0)"
-            set prep_ostat "prepare ostat (BIGINT, BIGINT, BIGINT, BIGINT, VARCHAR) AS select * from ostat(\$1,\$2,\$3,\$4,'\$5') as (ol_i_id BIGINT,  ol_supply_w_id BIGINT, ol_quantity SMALLINT, ol_amount NUMERIC, ol_delivery_d TIMESTAMP WITH TIME ZONE,  out_os_c_id BIGINT, out_os_c_last CHARACTER VARYING, os_c_first CHARACTER VARYING, os_c_middle CHARACTER VARYING, os_c_balance NUMERIC, os_o_id BIGINT, os_entdate TIMESTAMP, os_o_carrier_id BIGINT)"
-            set prep_delivery "prepare delivery (BIGINT, BIGINT) AS select delivery(\$1,\$2)"
-            set prep_slev "prepare slev (BIGINT, BIGINT, BIGINT) AS select slev(\$1,\$2,\$3)"
+            set prep_neword "prepare neword (INTEGER, INTEGER, INTEGER, INTEGER, INTEGER) as select neword(\$1,\$2,\$3,\$4,\$5,0)"
+            set prep_payment "prepare payment (INTEGER, INTEGER, INTEGER, INTEGER, INTEGER, INTEGER, NUMERIC, VARCHAR) AS select payment(\$1,\$2,\$3,\$4,\$5,\$6,\$7,'\$8','0',0)"
+            set prep_ostat "prepare ostat (INTEGER, INTEGER, INTEGER, INTEGER, VARCHAR) AS select * from ostat(\$1,\$2,\$3,\$4,'\$5') as (ol_i_id INTEGER,  ol_supply_w_id INTEGER, ol_quantity SMALLINT, ol_amount NUMERIC, ol_delivery_d TIMESTAMP WITH TIME ZONE,  out_os_c_id INTEGER, out_os_c_last CHARACTER VARYING, os_c_first CHARACTER VARYING, os_c_middle CHARACTER VARYING, os_c_balance NUMERIC, os_o_id INTEGER, os_entdate TIMESTAMP, os_o_carrier_id INTEGER)"
+            set prep_delivery "prepare delivery (INTEGER, INTEGER) AS select delivery(\$1,\$2)"
+            set prep_slev "prepare slev (INTEGER, INTEGER, INTEGER) AS select slev(\$1,\$2,\$3)"
             foreach prep_statement [ list $prep_neword $prep_payment $prep_ostat $prep_delivery $prep_slev ] {
                 set result [ pg_exec $lda $prep_statement ]
                 if {[pg_result $result -status] ni {"PGRES_TUPLES_OK" "PGRES_COMMAND_OK"}} {
@@ -402,7 +405,6 @@ switch $myposition {
         set abchk 1; set abchk_mx 1024; set hi_t [ expr {pow([ lindex [ time {if {  [ tsv::get application abort ]  } { break }} ] 0 ],2)}]
         for {set it 0} {$it < $total_iterations} {incr it} {
             if { [expr {$it % $abchk}] eq 0 } { if { [ time {if {  [ tsv::get application abort ]  } { break }} ] > $hi_t }  {  set  abchk [ expr {min(($abchk * 2), $abchk_mx)}]; set hi_t [ expr {$hi_t * 2} ] } }
-
             proc lrandom L {
                 lindex $L [expr {int(rand()*[llength $L])}]
             }
@@ -429,7 +431,7 @@ switch $myposition {
                 if { $KEYANDTHINK } { thinktime 5 }
             }
         }
-        pg_disconnect $lda
+xtreport $myposition
+                    pg_disconnect $lda
     }
 }
-
