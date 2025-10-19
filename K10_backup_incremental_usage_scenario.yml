@@ -20,7 +20,7 @@ flow:
     commands:
       - type: console
         note: RUN BACKUP
-        command:  mkdir /tmp/back && pg_basebackup -D backup1 -c fast -p 5432 -U postgres; for i in {1..7}; do pg_basebackup -D backup${i}_incr -i backup1/backup_manifest -c fast -p 5432 -v -U postgres && sleep 60; done
+        command:  mkdir /tmp/back && pg_basebackup -D backup1 -c fast -p 5432 -U postgres;  for i in `seq 1 6`; do pg_basebackup -D backup${i}_incr -i backup1/backup_manifest -c fast -p 5432 -v -U postgres && sleep 60; done
         shell: sh
         log-stdout: true
         read-sci-stdout: true
