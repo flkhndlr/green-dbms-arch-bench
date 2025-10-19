@@ -20,7 +20,7 @@ flow:
     commands:
       - type: console
         note: RUN BACKUP
-        command: for i in {1..7}; do pg_dump -U postgres -F c -b -v -f /tmp/back/full${i} postgres && sleep 60; done
+        command: mkdir /tmp/back && for i in {1..7}; do pg_dump -U postgres -F c -b -v -f /tmp/back/full${i} postgres && sleep 60; done
         shell: sh
         log-stdout: true
         read-sci-stdout: true

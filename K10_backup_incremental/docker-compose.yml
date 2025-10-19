@@ -15,10 +15,5 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     command: -c config_file=/tmp/repo/K10_backup_incremental/postgresql.conf
-    volumes:
-      - back:/tmp/back
     ports:
       - "5432:5432"
-
-volumes:
-  back:
