@@ -25,6 +25,7 @@ set transactions_per_user [expr {$total_transactions/$vu} ]
 # Configure the driver to run a fixed number of transactions
 diset tpcc pg_total_iterations $transactions_per_user
 
+diset tpcc pg_duration 20
 diset tpcc pg_driver timed
 
 # diset tpcc pg_vacuum true

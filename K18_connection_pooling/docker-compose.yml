@@ -19,9 +19,6 @@ services:
   pgbouncer:
     image: edoburu/pgbouncer
     container_name: pgbouncer
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
       DB_USER: postgres
       DB_PASSWORD: postgres
